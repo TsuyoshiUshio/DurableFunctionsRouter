@@ -1,0 +1,35 @@
+﻿using NuGet;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Router
+{
+    /// <summary>
+    /// Context object for Function App Version. 
+    /// It is stored on the function app. 
+    /// </summary>
+    public class AppContext
+    {
+        /// <summary>
+        /// Name of an Application. 
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// Function App name. 
+        /// </summary>
+        public string FunctionAppName { get; set; }
+        /// <summary>
+        /// Application Version
+        /// </summary>
+        public SemanticVersion Version { get; set; }
+
+        /// <summary>
+        /// State of the Function App
+        /// </summary>
+        public State State { get; set; }
+
+
+    }
+
+}
