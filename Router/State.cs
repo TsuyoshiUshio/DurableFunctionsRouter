@@ -6,6 +6,8 @@ namespace Router
 {
     public enum State
     {
+        Creating,
+        Failed,
         Running,
         Closing,
         Closed

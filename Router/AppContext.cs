@@ -16,9 +16,19 @@ namespace Router
         /// </summary>
         public string Name { get; set; }
         /// <summary>
+        /// Name of ResourceGroup
+        /// </summary>
+        public string ResourceGroup { get; set; }
+        /// <summary>
+        /// Region
+        /// <see cref="Microsoft.Azure.Management.ResourceManager.Fluent.Core.Region">Region</see>
+        /// </summary>
+        public string Region { get; set; }
+        /// <summary>
         /// Function App name. 
         /// </summary>
         public string FunctionAppName { get; set; }
+        public string Location { get; set; }
         /// <summary>
         /// Application Version
         /// </summary>
@@ -28,6 +38,19 @@ namespace Router
         /// State of the Function App
         /// </summary>
         public State State { get; set; }
+
+        /// <summary>
+        /// Update object if there is an non-null parameters except for State. 
+        /// </summary>
+        /// <param name=""></param>
+        public void Update(AppContext context)
+        {
+            Name = context.Name ?? Name;
+            ResourceGroup = context.ResourceGroup ?? ResourceGroup;
+            Region = context.Region ?? Region;
+            FunctionAppName = context.FunctionAppName ?? FunctionAppName;
+            Version = context.Version ?? Version;
+        }
 
 
     }

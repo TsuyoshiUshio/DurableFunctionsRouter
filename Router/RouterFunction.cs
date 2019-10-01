@@ -29,8 +29,8 @@ namespace Router
             // transfer the request to other functions
             var entity = await entityClient.ReadEntityStateAsync<FunctionApp>(new EntityId(nameof(FunctionApp), app));
             var functionApp = entity.EntityState;
-            var targetHost = functionApp.GetCurrent();
-            var response = await client.PostAsync(targetHost + "/api/" + functionName, new StreamContent(req.Body));
+            var currentFunctionApp = functionApp.GetCurrent();
+            var response = await client.PostAsync($"https://{currentFunctionApp.FunctionAppName}.azurewebsites.net/api/{functionName}", new StreamContent(req.Body));
             if (response.IsSuccessStatusCode)
             {
                 return new OkObjectResult(await response.Content.ReadAsStringAsync());

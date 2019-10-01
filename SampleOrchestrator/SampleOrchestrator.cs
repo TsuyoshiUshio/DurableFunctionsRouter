@@ -12,10 +12,10 @@ namespace SampleOrchestrator
     public static class SampleOrchestrator
     {
         [FunctionName("SampleOrchestrator")]
-        public static async Task RunOrchestrator(
+        public static async Task<string> RunOrchestrator(
             [OrchestrationTrigger] IDurableOrchestrationContext context)
         {           
-            await context.CallActivityAsync<string>("SampleOrchestrator_Hello", context.GetInput<string>());
+            return await context.CallActivityAsync<string>("SampleOrchestrator_Hello", context.GetInput<string>());
         }
 
         [FunctionName("SampleOrchestrator_Hello")]
@@ -33,7 +33,8 @@ namespace SampleOrchestrator
         {
             var functionAppName = Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME");
             // Function input comes from the request content.
-            string instanceId = await starter.StartNewAsync("SampleOrchestrator", functionAppName + ":" + req.Content.ReadAsStringAsync());
+            var body = await req.Content.ReadAsStringAsync();
+            string instanceId = await starter.StartNewAsync("SampleOrchestrator", functionAppName + ":" + body);
 
             log.LogInformation($"Started orchestration with ID = '{instanceId}'.");
 

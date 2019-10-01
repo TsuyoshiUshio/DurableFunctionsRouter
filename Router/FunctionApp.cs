@@ -15,9 +15,18 @@ namespace Router
         [JsonProperty("current")]
         public string Current { get; set; }
 
+        [JsonProperty("counter")]
+        public int Counter { get; set; }
+
         public FunctionApp()
         {
             Contexts = new Dictionary<string, AppContext>();
+        }
+
+        public int IncrementCounter()
+        {
+            Counter++;
+            return Counter;
         }
 
         public void CreateOrUpdate(AppContext context)
@@ -27,7 +36,8 @@ namespace Router
         }
         public AppContext GetCurrent()
         {
-           return Contexts.ContainsKey(Current) ? Contexts[Current] : null;
+            if (Current == null) return null;
+            return Contexts.ContainsKey(Current) ? Contexts[Current] : null;
         }
         public IDictionary<string, AppContext> Get() => this.Contexts;
 
