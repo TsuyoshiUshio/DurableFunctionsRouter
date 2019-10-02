@@ -10,10 +10,10 @@ using NuGet;
 
 namespace Router
 {
-    public class CreateOrUpdateOrchestrator
+    public class CreateOrUpdateFunctionAppOrchestrator
     {
         private readonly IAzure _azure;
-        public CreateOrUpdateOrchestrator(IAzure azure)
+        public CreateOrUpdateFunctionAppOrchestrator(IAzure azure)
         {
             _azure = azure;
         }
