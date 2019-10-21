@@ -1,0 +1,79 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: Restore
+  inputs:
+    command: restore
+    projects: '**/*.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    projects: '**/*.csproj'
+    arguments: '--configuration $(BuildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: Publish
+  inputs:
+    command: publish
+    publishWebProjects: False
+    arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
+    zipAfterPublish: True
+
+- task: PowerShell@2
+  displayName: 
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Get the Version from csproj file and set output variables functionVersion
+      $csproj = [xml](cat .\SampleOrchestrator\SampleOrchestrator.csproj)
+      $command = "##vso[task.setvariable variable=functionVersion;]{0}" -f $csproj.Project.PropertyGroup.Version
+      Write-Host $command
+      
+      # Request GetTargetFunctionApp to the Router function
+      $Url = "$(RouterUri)"
+      $Body = @{    
+        "Name" = "tsushixyz";
+        "ResourceGroup" = "tsushixyzrg";
+        "FunctionAppName" = "tsushixyz";
+        "Region" = "westus";
+        "Version" = $csproj.Project.PropertyGroup.Version;
+      }
+      $response = try {Invoke-RestMethod -Method 'Post' -Uri $Url -Body ($Body|ConvertTo-Json) } catch { $_.Exception.Response}
+      $statusQueryUri = $response.statusQueryGetUri
+      Write-Host $statusQueryUri
+      
+      # Request StatusQuery until it is completed.
+      $timeout = 600
+      $timer = [Diagnostics.Stopwatch]::StartNew()
+      
+      While($timer.Elapsed.TotalSeconds -lt $timeout) {
+        $response = try {Invoke-RestMethod -Uri $statusQueryUri } catch { $_.Exception.Response}
+        $status = "RuntimStaus:{0} ElapsedTime:{1}" -f $response.runtimeStatus, $timer.Elapsed.TotalSeconds
+        Write-Host $status
+        # Set functionAppName as output variable
+        if ($response.runtimeStatus -eq "Completed") {
+          $command = "##vso[task.setvariable variable=functionAppName;]{0}" -f $response.output.FunctionAppName
+          Write-Host $command
+          break;
+        }
+        Start-Sleep -Second 10
+      }
+- task: AzureFunctionApp@1
+  displayName: Deploy Application
+  inputs:
+    azureSubscription: '$(Subscription)'
+    appType: 'functionApp'
+    appName: '$(functionAppName)'
+    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    deploymentMethod: 'runFromPackage'
