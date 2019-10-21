@@ -34,12 +34,12 @@ namespace Router
             if (currentAppContext == null || appContext.Version.RequireNewDeployment(currentAppContext.Version))
             {
                 // New Deployment
-                if (currentAppContext != null) appContext.Update(currentAppContext);
                 int counter = await context.CallEntityAsync<int>(
                     new EntityId(nameof(FunctionApp), 
                         appContext.Name),
                     "IncrementCounter", null);
                 appContext.FunctionAppName = $"{appContext.Name}{counter}";
+                appContext.ResourceGroup = $"{appContext.ResourceGroup}{counter}";
 
                 await context.CallActivityAsync("CreateOrUpdateFunctionAppActivity", appContext);
 

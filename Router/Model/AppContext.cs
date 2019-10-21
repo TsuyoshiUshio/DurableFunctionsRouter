@@ -38,21 +38,6 @@ namespace Router
         /// State of the Function App
         /// </summary>
         public State State { get; set; }
-
-        /// <summary>
-        /// Update object if there is an non-null parameters except for State. 
-        /// </summary>
-        /// <param name=""></param>
-        public void Update(AppContext context)
-        {
-            Name = context.Name ?? Name;
-            ResourceGroup = context.ResourceGroup ?? ResourceGroup;
-            Region = context.Region ?? Region;
-            FunctionAppName = context.FunctionAppName ?? FunctionAppName;
-            Version = context.Version ?? Version;
-        }
-
-
     }
 
 }
