@@ -32,7 +32,7 @@ steps:
     zipAfterPublish: True
 
 - task: PowerShell@2
-  displayName: 
+  displayName: Create or Get Target FunctionApp
   inputs:
     targetType: 'inline'
     script: |
