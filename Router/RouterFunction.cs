@@ -12,10 +12,10 @@ namespace Router
 {
     public class RouterFunction
     {
-        private HttpClient client;
-        public RouterFunction(HttpClient client)
+        private readonly IHttpClientFactory _clientFactory;
+        public RouterFunction(IHttpClientFactory factory)
         {
-            this.client = client;
+            _clientFactory = factory;
         }
 
         [FunctionName("StartOrchestration")]
@@ -30,6 +30,7 @@ namespace Router
             var entity = await entityClient.ReadEntityStateAsync<FunctionApp>(new EntityId(nameof(FunctionApp), app));
             var functionApp = entity.EntityState;
             var currentFunctionApp = functionApp.GetCurrent();
+            var client = _clientFactory.CreateClient();
             var response = await client.PostAsync($"https://{currentFunctionApp.FunctionAppName}.azurewebsites.net/api/{functionName}", new StreamContent(req.Body));
             if (response.IsSuccessStatusCode)
             {
