@@ -44,9 +44,9 @@ steps:
       # Request GetTargetFunctionApp to the Router function
       $Url = "$(RouterUri)"
       $Body = @{    
-        "Name" = "tsushixyz";
-        "ResourceGroup" = "tsushixyzrg";
-        "FunctionAppName" = "tsushixyz";
+        "Name" = "$(AppName)";
+        "ResourceGroup" = "$(AppName)rg";
+        "FunctionAppName" = "$(AppName)";
         "Region" = "westus";
         "Version" = $csproj.Project.PropertyGroup.Version;
       }
